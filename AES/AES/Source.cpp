@@ -93,7 +93,7 @@ int shiftrow()
 void mixcolumns()
 {
 
-
+	int temp;
 	for (int i = 0; i < 4; i++)
 	{
 
