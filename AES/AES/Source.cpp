@@ -108,5 +108,8 @@ void main()
 	};
 	subsbyte(plain);
 	shiftrow();
-	mixcolumns();
+	//mixcolumns();
+	int x = 0x4f<<1;
+
+	cout  << x << endl;
 }
