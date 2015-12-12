@@ -136,6 +136,10 @@ unsigned char Tmp;
 	return **statematrix;
 	
 }
+void addroundkey(int round)
+{
+
+}
 
 
 void main()
@@ -144,15 +148,21 @@ void main()
 	unsigned char plain[4][4] = {
 		0xea, 0x83, 0x5c, 0xf0, 0x04, 0x45, 0x33, 0x2d, 0x65, 0x5d, 0x98, 0xad, 0x85, 0x96, 0xb0, 0xc5
 	};
+	addroundkey(0);
+	for (int round = 1; round < 10; i++)
+	{
+		subsbyte(plain);
+		shiftrow();
+		mixcolumns();
+		addroundkey(round);
+	}
 	subsbyte(plain);
 	shiftrow();
-	mixcolumns();
+	addroundkey(10);
 	clock_t stop_s = clock();
-	//cout << ((double)(stop_s - start_s)) * 1000 / CLOCKS_PER_SEC << endl;
+	
 	cout << "time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << endl;
-	//int x = 0x4f<<1;
+	
 
-	//cout  << x << endl;
-	//unsigned int x = 0xd2;
-	//cout << ((x>>7)) << endl;
+	
 }
