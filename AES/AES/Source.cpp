@@ -11,6 +11,9 @@
 using namespace std;
 vector<vector<unsigned char> > sBoxVector(16, vector<unsigned char>(16, 0));
 unsigned int statematrix[4][4];
+#define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
+
+
 
 unsigned int sBoxArray[256] = {
 	0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -93,25 +96,58 @@ int shiftrow()
 void mixcolumns()
 {
 
-	int temp;
+	unsigned int t;
+	unsigned int temp1;
+unsigned int Tmp;
+	int Tm;
+	int x;
 	for (int i = 0; i < 4; i++)
 	{
-		temp = (statematrix[0][i] << 1) ^ ((statematrix[1][i] << 1) ^ 0x1b) ^ statematrix[2][i] ^ statematrix[3][i];
-		
-		
+		t = statematrix[i][0];
+		temp1 = statematrix[i][0] ^ statematrix[i][1] ^ statematrix[i][2] ^ statematrix[i][3];
+		Tm = statematrix[i][0] ^ statematrix[i][1]; 
+		Tm = xtime(Tm);
+		statematrix[i][0] = statematrix[i][0] ^ Tm ^ temp1;
+
+		Tm = statematrix[i][1] ^ statematrix[i][2];
+		Tm = xtime(Tm);
+		statematrix[i][1] = statematrix[i][1] ^ Tm ^ temp1;
+
+		Tm = statematrix[i][2] ^ statematrix[i][3];
+		Tm = xtime(Tm);
+		statematrix[i][2] = statematrix[i][2] ^ Tm ^ temp1;
+
+		Tm = statematrix[i][3] ^ t;
+		Tm = xtime(Tm);
+		statematrix[i][3] = statematrix[i][3] ^ Tm ^ temp1;
+
+
 	}
+		
+		
+
 }
 
 
 void main()
 {
+	clock_t start_s = clock();
 	unsigned int plain[4][4] = {
 		0xea, 0x83, 0x5c, 0xf8, 0x04, 0x45, 0x33, 0x2d, 0x65, 0x5d, 0x98, 0xad, 0x85, 0x96, 0xb0, 0xc5
 	};
 	subsbyte(plain);
 	shiftrow();
-	//mixcolumns();
-	int x = 0x4f<<1;
+	
 
-	cout  << x << endl;
+
+
+	mixcolumns();
+	clock_t stop_s = clock();
+	//cout << ((double)(stop_s - start_s)) * 1000 / CLOCKS_PER_SEC << endl;
+	cout << "time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << endl;
+	//int x = 0x4f<<1;
+
+	//cout  << x << endl;
+	//unsigned int x = 0xd2;
+	//cout << ((x>>7)) << endl;
 }
