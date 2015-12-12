@@ -96,8 +96,9 @@ void mixcolumns()
 	int temp;
 	for (int i = 0; i < 4; i++)
 	{
-		statematrix[0][i] << 1;
-		(statematrix[1][i] << 1)^0x1b;
+		temp = (statematrix[0][i] << 1) ^ ((statematrix[1][i] << 1) ^ 0x1b) ^ statematrix[2][i] ^ statematrix[3][i];
+		
+		
 	}
 }
 
