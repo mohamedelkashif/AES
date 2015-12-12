@@ -10,12 +10,12 @@
 
 using namespace std;
 vector<vector<unsigned char> > sBoxVector(16, vector<unsigned char>(16, 0));
-unsigned int statematrix[4][4];
+unsigned char statematrix[4][4];
 #define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
 
 
 
-unsigned int sBoxArray[256] = {
+ int sBoxArray[256] = {
 	0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
 	0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
 	0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -40,7 +40,7 @@ unsigned int getSBoxValue(unsigned int num)
 
 }
 
-int subsbyte(unsigned int plain[4][4])
+unsigned char subsbyte(unsigned char plain[4][4])
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -55,9 +55,9 @@ int subsbyte(unsigned int plain[4][4])
 }
 //cout << *statematrix << endl;
 
-int shiftrow()
+unsigned char shiftrow()
 {
-	unsigned int temp;
+	unsigned char temp;
 	temp = statematrix[0][1];
 	// row 1
 	statematrix[0][1] = statematrix[1][1];
@@ -85,7 +85,7 @@ int shiftrow()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			cout << hex << statematrix[i][j] << endl;
+			cout << hex <<(int) statematrix[i][j] << endl;
 		}
 	}
 
@@ -93,15 +93,15 @@ int shiftrow()
 
 }
 
-void mixcolumns()
+int mixcolumns()
 {
-
-	unsigned int t;
-	unsigned int temp1;
-unsigned int Tmp;
-	int Tm;
-	int x;
-	for (int i = 0; i < 4; i++)
+	int i;
+	unsigned char t;
+	unsigned char temp1;
+unsigned char Tmp;
+	unsigned char Tm;
+	
+	for ( i = 0; i < 4; i++)
 	{
 		t = statematrix[i][0];
 		temp1 = statematrix[i][0] ^ statematrix[i][1] ^ statematrix[i][2] ^ statematrix[i][3];
@@ -121,26 +121,31 @@ unsigned int Tmp;
 		Tm = xtime(Tm);
 		statematrix[i][3] = statematrix[i][3] ^ Tm ^ temp1;
 
-
+		
 	}
-		
-		
-
+	/*for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			unsigned char b = statematrix[i][j];
+			cout  <<hex<< (int)b << endl;
+		}
+	}*/
+	//cout <<hex<<(unsigned int) statematrix[0][1] << endl;
+	cout << (int)**statematrix << endl;
+	return **statematrix;
+	
 }
 
 
 void main()
 {
 	clock_t start_s = clock();
-	unsigned int plain[4][4] = {
-		0xea, 0x83, 0x5c, 0xf8, 0x04, 0x45, 0x33, 0x2d, 0x65, 0x5d, 0x98, 0xad, 0x85, 0x96, 0xb0, 0xc5
+	unsigned char plain[4][4] = {
+		0xea, 0x83, 0x5c, 0xf0, 0x04, 0x45, 0x33, 0x2d, 0x65, 0x5d, 0x98, 0xad, 0x85, 0x96, 0xb0, 0xc5
 	};
 	subsbyte(plain);
 	shiftrow();
-	
-
-
-
 	mixcolumns();
 	clock_t stop_s = clock();
 	//cout << ((double)(stop_s - start_s)) * 1000 / CLOCKS_PER_SEC << endl;
