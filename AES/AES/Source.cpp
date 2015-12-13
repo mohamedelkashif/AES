@@ -11,8 +11,9 @@
 using namespace std;
 
 unsigned char statematrix[4][4];
-unsigned char roundkey[176];
-//unsigned char Key[16];
+unsigned char roundkey[88][88];
+unsigned char Key[4][4];
+unsigned char in[4][4];
 #define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
 
 
@@ -61,15 +62,15 @@ unsigned int getSBoxValue(unsigned int num)
 
 }
 
-unsigned char subsbyte(unsigned char plain[4][4])
+unsigned char subsbyte(unsigned char in[4][4])
 {
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			statematrix[i][j] = getSBoxValue(plain[i][j]);
+			statematrix[i][j] = getSBoxValue(in[i][j]);
 
-			//cout << hex << statematrix[i][j] << endl;
+			cout << hex <<(unsigned int) statematrix[i][j] << endl;
 		}
 	}
 	return **statematrix;
@@ -153,32 +154,57 @@ int mixcolumns()
 		}
 	}*/
 	//cout <<hex<<(unsigned int) statematrix[0][1] << endl;
-	cout << (int)**statematrix << endl;
+	//cout << (int)**statematrix << endl;
 	return **statematrix;
 	
 }
-//void addroundkey(int round)
-//{
-//	for (int i = 0; i < 4; i++)
-//	{
-//		for (int j = 0; j < 4; j++)
-//		{
-//			//statematrix[i][j] = statematrix[i][j] ^ roundkey[];
-//		}
-//	}
-//}
+void addroundkey(int round)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			statematrix[i][j] = statematrix[i][j] ^ roundkey[i][j];
+			//cout <<hex<< (unsigned int)statematrix[i][j] << endl;
+		}
+	}
+}
 
-void keyExpansion(unsigned int key[16])
+void keyExpansion(unsigned char key[4][4])
 {
 	int i;
-	for ( i = 0; i < 16; i++)
+	for ( i = 0; i < 4; i++)
 	{
-		
-		roundkey[i] += key[i];
-		cout << hex << (unsigned int)roundkey[i] << endl;
+		for (int j = 0; j < 4; j++)
+		{
+
+			roundkey[i][j] = key[i][j];
+		}
+		//cout << hex << (unsigned int)roundkey[i] << endl;
 		
 	}
 	//cout <<hex<<(unsigned int) *roundkey << endl;
+}
+
+void do_cipher()
+{
+	int i, j;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			statematrix[i][j] = in[i][j];
+		}
+	}
+	//cout <<(unsigned int) statematrix[0][0] << endl;
+
+	addroundkey(0);
+	
+		subsbyte(in);
+		shiftrow();
+		mixcolumns();
+		//addroundkey(round);
+	
 }
 
 
@@ -186,22 +212,32 @@ void main()
 {
 	clock_t start_s = clock();
 	unsigned char plain[4][4] = {
-		0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x65
+		0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x6f
 	};
-	unsigned int key[16] = {0x69, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6d, 0x79, 0x4b, 0x75, 0x6e, 0x67, 0x20, 0x46, 0x75 };
+	unsigned char key[4][4] = {0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x60, 0x79,0x20, 0x4b, 0x75, 0x6e, 0x67, 0x20, 0x46, 0x75 };
 
 	
-		subsbyte(plain);
-		shiftrow();
-		mixcolumns();
-		
+		//subsbyte(plain);
+		//shiftrow();
+		//mixcolumns();
+	for (int i = 0; i<4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			in[i][j] = plain[i][j];
+			key[i][j] = key[i][j];
+		}
+	}
 	
 	
 	clock_t stop_s = clock();
 	keyExpansion(key);
+
 	
+	//cout << (unsigned int) key[1] << endl;
+	do_cipher();
 	cout << "time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << endl;
 	
-
+	
 	
 }
