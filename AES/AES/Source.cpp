@@ -9,8 +9,10 @@
 
 
 using namespace std;
-vector<vector<unsigned char> > sBoxVector(16, vector<unsigned char>(16, 0));
+
 unsigned char statematrix[4][4];
+unsigned char roundkey[176];
+//unsigned char Key[16];
 #define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
 
 
@@ -100,13 +102,13 @@ unsigned char shiftrow()
 	statematrix[3][3] = statematrix[2][3];
 	statematrix[2][3] = statematrix[1][3];
 	statematrix[1][3] = temp;
-	for (int i = 0; i < 4; i++)
+	/*for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
 			cout << hex <<(int) statematrix[i][j] << endl;
 		}
-	}
+	}*/
 
 	return **statematrix;
 
@@ -117,7 +119,7 @@ int mixcolumns()
 	int i;
 	unsigned char t;
 	unsigned char temp1;
-unsigned char Tmp;
+	unsigned char Tmp;
 	unsigned char Tm;
 	
 	for ( i = 0; i < 4; i++)
@@ -155,9 +157,28 @@ unsigned char Tmp;
 	return **statematrix;
 	
 }
-void addroundkey(int round)
-{
+//void addroundkey(int round)
+//{
+//	for (int i = 0; i < 4; i++)
+//	{
+//		for (int j = 0; j < 4; j++)
+//		{
+//			//statematrix[i][j] = statematrix[i][j] ^ roundkey[];
+//		}
+//	}
+//}
 
+void keyExpansion(unsigned int key[16])
+{
+	int i;
+	for ( i = 0; i < 16; i++)
+	{
+		
+		roundkey[i] += key[i];
+		cout << hex << (unsigned int)roundkey[i] << endl;
+		
+	}
+	//cout <<hex<<(unsigned int) *roundkey << endl;
 }
 
 
@@ -165,20 +186,19 @@ void main()
 {
 	clock_t start_s = clock();
 	unsigned char plain[4][4] = {
-		0xea, 0x83, 0x5c, 0xf0, 0x04, 0x45, 0x33, 0x2d, 0x65, 0x5d, 0x98, 0xad, 0x85, 0x96, 0xb0, 0xc5
+		0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x65
 	};
-	addroundkey(0);
-	for (int round = 1; round < 10; i++)
-	{
+	unsigned int key[16] = {0x69, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6d, 0x79, 0x4b, 0x75, 0x6e, 0x67, 0x20, 0x46, 0x75 };
+
+	
 		subsbyte(plain);
 		shiftrow();
 		mixcolumns();
-		addroundkey(round);
-	}
-	subsbyte(plain);
-	shiftrow();
-	addroundkey(10);
+		
+	
+	
 	clock_t stop_s = clock();
+	keyExpansion(key);
 	
 	cout << "time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << endl;
 	
