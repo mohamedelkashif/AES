@@ -252,14 +252,14 @@ void keyExpansion(unsigned char key[16])
 
 void do_cipher()
 {
-	int i, j;
+	/*int i, j;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
 			statematrix[i][j] = in[i][j];
 		}
-	}
+	}*/
 	//cout <<(unsigned int) statematrix[0][0] << endl;
 
 	addroundkey(0);
@@ -274,73 +274,81 @@ void do_cipher()
 	shiftrow();
 	addroundkey(10);
 
-	for (i = 0; i<4; i++)
-	{
-		for (j = 0; j<4; j++)
-		{
-			out[i * 4 + j] = statematrix[i][j];
-			//cout << hex << (unsigned int)statematrix[i][j] << endl;
-		}
-	}
+	//for (i = 0; i<4; i++)
+	//{
+	//	for (j = 0; j<4; j++)
+	//	{
+	//		out[i * 4 + j] = statematrix[i][j];
+	//		//cout << hex << (unsigned int)statematrix[i][j] << endl;
+	//	}
+	//}
 
 }
-void main()
+int  main()
 {
-	//clock_t start_s = clock();
-
-	//unsigned char plain[4][4] = { 0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x6f };
-	//unsigned char key[16] = { 0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6d, 0x79, 0x20, 0x4b, 0x75, 0x6e, 0x67, 0x20, 0x46, 0x75 };
-	cout << "Enter plain text" << endl;
-	string p;
-	cin >> p;
-	cout << "Enter key" << endl;
-	string k;
-	cin >> k;
-	unsigned plain[4][4] = { strtoul(p.substr(0, 2).c_str(), NULL, 16), strtoul(p.substr(2, 2).c_str(), NULL, 16), strtoul(p.substr(4, 2).c_str(), NULL, 16), strtoul(p.substr(6, 2).c_str(), NULL, 16), strtoul(p.substr(8, 2).c_str(), NULL, 16), strtoul(p.substr(10, 2).c_str(), NULL, 16), strtoul(p.substr(12, 2).c_str(), NULL, 16), strtoul(p.substr(14, 2).c_str(), NULL, 16), strtoul(p.substr(16, 2).c_str(), NULL, 16), strtoul(p.substr(18, 2).c_str(), NULL, 16), strtoul(p.substr(20, 2).c_str(), NULL, 16), strtoul(p.substr(22, 2).c_str(), NULL, 16), strtoul(p.substr(24, 2).c_str(), NULL, 16), strtoul(p.substr(26, 2).c_str(), NULL, 16), strtoul(p.substr(28, 2).c_str(), NULL, 16), strtoul(p.substr(30, 2).c_str(), NULL, 16) };
-	unsigned char key[16] = { strtoul(k.substr(0, 2).c_str(), NULL, 16), strtoul(k.substr(2, 2).c_str(), NULL, 16), strtoul(k.substr(4, 2).c_str(), NULL, 16), strtoul(k.substr(6, 2).c_str(), NULL, 16), strtoul(k.substr(8, 2).c_str(), NULL, 16), strtoul(k.substr(10, 2).c_str(), NULL, 16), strtoul(k.substr(12, 2).c_str(), NULL, 16), strtoul(k.substr(14, 2).c_str(), NULL, 16), strtoul(k.substr(16, 2).c_str(), NULL, 16), strtoul(k.substr(18, 2).c_str(), NULL, 16), strtoul(k.substr(20, 2).c_str(), NULL, 16), strtoul(k.substr(22, 2).c_str(), NULL, 16), strtoul(k.substr(24, 2).c_str(), NULL, 16), strtoul(k.substr(26, 2).c_str(), NULL, 16), strtoul(k.substr(28, 2).c_str(), NULL, 16), strtoul(k.substr(30, 2).c_str(), NULL, 16) };
-
-
-
-	//0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6d, 0x79,0x20, 0x4b, 0x75, 0x6e, 0x67, 0x20, 0x46, 0x75 key
-	//0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x6f plain
-		//subsbyte(plain);
-		//shiftrow();
-		//mixcolumns();
-	for (int i = 0; i<4; i++)
+	int n;
+	cout << "Enter no of inputs" << endl;
+	cin >> n;
+	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		cout << "\n" "Enter plain text" << endl;
+		string p;
+		cin >> p;
+		cout << "Enter key" << endl;
+		string k;
+		cin >> k;
+		unsigned plain[4][4] = { strtoul(p.substr(0, 2).c_str(), NULL, 16), strtoul(p.substr(2, 2).c_str(), NULL, 16), strtoul(p.substr(4, 2).c_str(), NULL, 16), strtoul(p.substr(6, 2).c_str(), NULL, 16), strtoul(p.substr(8, 2).c_str(), NULL, 16), strtoul(p.substr(10, 2).c_str(), NULL, 16), strtoul(p.substr(12, 2).c_str(), NULL, 16), strtoul(p.substr(14, 2).c_str(), NULL, 16), strtoul(p.substr(16, 2).c_str(), NULL, 16), strtoul(p.substr(18, 2).c_str(), NULL, 16), strtoul(p.substr(20, 2).c_str(), NULL, 16), strtoul(p.substr(22, 2).c_str(), NULL, 16), strtoul(p.substr(24, 2).c_str(), NULL, 16), strtoul(p.substr(26, 2).c_str(), NULL, 16), strtoul(p.substr(28, 2).c_str(), NULL, 16), strtoul(p.substr(30, 2).c_str(), NULL, 16) };
+		unsigned char key[16] = { strtoul(k.substr(0, 2).c_str(), NULL, 16), strtoul(k.substr(2, 2).c_str(), NULL, 16), strtoul(k.substr(4, 2).c_str(), NULL, 16), strtoul(k.substr(6, 2).c_str(), NULL, 16), strtoul(k.substr(8, 2).c_str(), NULL, 16), strtoul(k.substr(10, 2).c_str(), NULL, 16), strtoul(k.substr(12, 2).c_str(), NULL, 16), strtoul(k.substr(14, 2).c_str(), NULL, 16), strtoul(k.substr(16, 2).c_str(), NULL, 16), strtoul(k.substr(18, 2).c_str(), NULL, 16), strtoul(k.substr(20, 2).c_str(), NULL, 16), strtoul(k.substr(22, 2).c_str(), NULL, 16), strtoul(k.substr(24, 2).c_str(), NULL, 16), strtoul(k.substr(26, 2).c_str(), NULL, 16), strtoul(k.substr(28, 2).c_str(), NULL, 16), strtoul(k.substr(30, 2).c_str(), NULL, 16) };
+
+
+
+
+		for (int i = 0; i < 4; i++)
 		{
-			in[i][j] = plain[i][j];
-			
-			
+			for (int j = 0; j < 4; j++)
+			{
+				statematrix[i][j] = plain[i][j];
+
+
+			}
 		}
-		}
-	for (int i = 0; i < 16; i++)
-	{
+		/*for (int i = 0; i < 16; i++)
+		{
 		key[i] = key[i];
-	}
-	
-	clock_t t1 = clock();
-	keyExpansion(key);
-	do_cipher();
+		}*/
 
-	
-	cout << "Text after encryption:" << endl;
-	for (int i = 0; i<4 * 4; i++)
+		clock_t t1 = clock();
+		int m;
+		cout << "Enter no of times of encryption" << endl;
+		cin >> m;
+		keyExpansion(key);
+		for (int i = 0; i < m; i++)
 		{
-		
-		cout<<setfill('0')<<setw(2) << hex << (unsigned int)out[i] << " ";
+			do_cipher();
 		}
 
+		cout << "Text after encryption:" << endl;
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				//cout<<setfill('0')<<setw(2) << hex << (unsigned int)out[i] << " ";
+				printf("%x", (unsigned int)statematrix[i][j]);
+			}
+		}
+		cout << endl;
+	}
 	clock_t t2 = clock();
-	double msec = ((double)(t2 - t1)) * 1000 /(double) CLOCKS_PER_SEC;
-	cout << "\n""time: " << msec << endl;
+	
+	//double msec = ((double)(t2 - t1)) * 1000 /(double) CLOCKS_PER_SEC;
+	//cout << "\n""time: " << msec << endl;
 	
 
 
 	
-	//cout << "\n""time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) *1000 << endl;
-	
+	//cout << "\n""time: " << ((t2 - t1) / double(CLOCKS_PER_SEC)) *1000 << endl;
+	//printf("%f", ((t2 - t1) / double(CLOCKS_PER_SEC)) * 1000);
+	return 0;
 	
 	
 }
