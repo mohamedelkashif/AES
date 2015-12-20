@@ -317,16 +317,17 @@ int  main()
 		key[i] = key[i];
 		}*/
 
-		clock_t t1 = clock();
+		
 		int m;
 		cout << "Enter no of times of encryption" << endl;
 		cin >> m;
 		keyExpansion(key);
+		clock_t t1 = clock();
 		for (int i = 0; i < m; i++)
 		{
 			do_cipher();
 		}
-
+		
 		cout << "Text after encryption:" << endl;
 		for (int i = 0; i < 4; i++)
 		{
@@ -334,11 +335,15 @@ int  main()
 			{
 				//cout<<setfill('0')<<setw(2) << hex << (unsigned int)out[i] << " ";
 				printf("%x", (unsigned int)statematrix[i][j]);
+				
 			}
+			
 		}
+		clock_t t2 = clock();
 		cout << endl;
+		printf("%f", ((double)(t2 - t1)) * 1000 / (double)CLOCKS_PER_SEC);
 	}
-	clock_t t2 = clock();
+	
 	
 	//double msec = ((double)(t2 - t1)) * 1000 /(double) CLOCKS_PER_SEC;
 	//cout << "\n""time: " << msec << endl;
