@@ -12,16 +12,16 @@
 
 using namespace std;
 
-unsigned char statematrix[4][4];
-unsigned char roundkey[176];
+unsigned char result[4][4];
+unsigned char rkey[176];
 unsigned char Key[16];
 unsigned char in[4][4];
 unsigned char out[16];
-#define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
+#define xtime(x)  ((x<<1) ^ (((x>>7) & 1) * 0x1b))
 
 
 
- int sBoxArray[256] = {
+int sbox[256] = {
 	0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
 	0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
 	0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -40,81 +40,81 @@ unsigned char out[16];
 	0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
- int Rcon[255] = {
-	 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
-	 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39,
-	 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a,
-	 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8,
-	 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef,
-	 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc,
-	 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b,
-	 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3,
-	 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94,
-	 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20,
-	 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35,
-	 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f,
-	 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04,
-	 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63,
-	 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd,
-	 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb };
+int Rcon[255] = {
+	0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
+	0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39,
+	0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a,
+	0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8,
+	0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef,
+	0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc,
+	0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b,
+	0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3,
+	0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94,
+	0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20,
+	0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35,
+	0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f,
+	0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04,
+	0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63,
+	0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd,
+	0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb };
 
 
-unsigned int getSBoxValue(unsigned int num)
+unsigned int return_sbox(unsigned int num)
 {
-	return sBoxArray[num];
+	return sbox[num];
 
 }
 
-unsigned char subsbyte(unsigned char in[4][4])
+unsigned char subistiute_byte(unsigned char in[4][4])
 {
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			statematrix[i][j] = getSBoxValue(in[i][j]);
+			result[i][j] = return_sbox(in[i][j]);
 
-			//cout << hex <<(unsigned int) statematrix[i][j] << endl;
+			//cout << hex <<(unsigned int) result[i][j] << endl;
 		}
 	}
-	return **statematrix;
+	return **result;
 }
-//cout << *statematrix << endl;
+//cout << *result << endl;
 
 unsigned char shiftrow()
 {
 	unsigned char temp;
-	temp = statematrix[0][1];
+	temp = result[0][1];
 	// row 1
-	statematrix[0][1] = statematrix[1][1];
-	statematrix[1][1] = statematrix[2][1];
-	statematrix[2][1] = statematrix[3][1];
-	statematrix[3][1] = temp;
+	result[0][1] = result[1][1];
+	result[1][1] = result[2][1];
+	result[2][1] = result[3][1];
+	result[3][1] = temp;
 
 	//row 2
-	temp = statematrix[0][2];
-	statematrix[0][2] = statematrix[2][2];
-	statematrix[2][2] = temp;
+	temp = result[0][2];
+	result[0][2] = result[2][2];
+	result[2][2] = temp;
 
 
-	temp = statematrix[1][2];
-	statematrix[1][2] = statematrix[3][2];
-	statematrix[3][2] = temp;
+	temp = result[1][2];
+	result[1][2] = result[3][2];
+	result[3][2] = temp;
 
 	//row 3
-	temp = statematrix[0][3];
-	statematrix[0][3] = statematrix[3][3];
-	statematrix[3][3] = statematrix[2][3];
-	statematrix[2][3] = statematrix[1][3];
-	statematrix[1][3] = temp;
+	temp = result[0][3];
+	result[0][3] = result[3][3];
+	result[3][3] = result[2][3];
+	result[2][3] = result[1][3];
+	result[1][3] = temp;
 	/*for (int i = 0; i < 4; i++)
 	{
-		/*for (int j = 0; j < 4; j++)
-		{
-			cout << hex <<(int) statematrix[i][j] << endl;
-		}
+	/*for (int j = 0; j < 4; j++)
+	{
+	cout << hex <<(int) result[i][j] << endl;
+	}
 	}*/
 
-	return **statematrix;
+	return **result;
 
 }
 
@@ -123,58 +123,57 @@ int mixcolumns()
 	int i;
 	unsigned char t;
 	unsigned char temp1;
-	unsigned char Tmp;
-	unsigned char Tm;
-	
-	for ( i = 0; i < 4; i++)
+	unsigned char temp2;
+
+	for (i = 0; i < 4; i++)
 	{
-		t = statematrix[i][0];
-		temp1 = statematrix[i][0] ^ statematrix[i][1] ^ statematrix[i][2] ^ statematrix[i][3];
-		Tm = statematrix[i][0] ^ statematrix[i][1]; 
-		Tm = xtime(Tm);
-		statematrix[i][0] = statematrix[i][0] ^ Tm ^ temp1;
+		t = result[i][0];
+		temp1 = result[i][0] ^ result[i][1] ^ result[i][2] ^ result[i][3];
+		temp2 = result[i][0] ^ result[i][1];
+		temp2 = xtime(temp2);
+		result[i][0] = result[i][0] ^ temp2 ^ temp1;
 
-		Tm = statematrix[i][1] ^ statematrix[i][2];
-		Tm = xtime(Tm);
-		statematrix[i][1] = statematrix[i][1] ^ Tm ^ temp1;
+		temp2 = result[i][1] ^ result[i][2];
+		temp2 = xtime(temp2);
+		result[i][1] = result[i][1] ^ temp2 ^ temp1;
 
-		Tm = statematrix[i][2] ^ statematrix[i][3];
-		Tm = xtime(Tm);
-		statematrix[i][2] = statematrix[i][2] ^ Tm ^ temp1;
+		temp2 = result[i][2] ^ result[i][3];
+		temp2 = xtime(temp2);
+		result[i][2] = result[i][2] ^ temp2 ^ temp1;
 
-		Tm = statematrix[i][3] ^ t;
-		Tm = xtime(Tm);
-		statematrix[i][3] = statematrix[i][3] ^ Tm ^ temp1;
+		temp2 = result[i][3] ^ t;
+		temp2 = xtime(temp2);
+		result[i][3] = result[i][3] ^ temp2 ^ temp1;
 
-		
+
 	}
 	/*for (int i = 0; i < 4; i++)
 	{
+	for (int j = 0; j < 4; j++)
+	{
+	unsigned char b = result[i][j];
+	cout  <<hex<< (int)b << endl;
+	}
+	}*/
+	//cout <<hex<<(unsigned int) result[0][1] << endl;
+	//cout << (int)**result << endl;
+	return **result;
+
+}
+void addrkey(int round)
+{
+
+
+	for (int i = 0; i < 4; i++)
+	{
 		for (int j = 0; j < 4; j++)
 		{
-			unsigned char b = statematrix[i][j];
-			cout  <<hex<< (int)b << endl;
-		}
-	}*/
-	//cout <<hex<<(unsigned int) statematrix[0][1] << endl;
-	//cout << (int)**statematrix << endl;
-	return **statematrix;
-	
-}
-void addroundkey(int round)
-{
-	
-	
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				statematrix[i][j] = statematrix[i][j] ^ roundkey[round*16+ i*4 + j];
+			result[i][j] = result[i][j] ^ rkey[round * 16 + i * 4 + j];
 
-				//cout <<hex<< (unsigned int)statematrix[i][j] << endl;
-			}
+			//cout <<hex<< (unsigned int)result[i][j] << endl;
 		}
-	
+	}
+
 
 
 }
@@ -182,33 +181,33 @@ void addroundkey(int round)
 void keyExpansion(unsigned char key[16])
 {
 	int i; unsigned char w[44]; unsigned char temp[4]; unsigned char k;
-	for ( i = 0; i < 4; i++)
+	for (i = 0; i < 4; i++)
 	{
-		
+
 		/*for (int j = 0; j < 4; j++)
 		{*/
-			roundkey[i * 4] = key[i * 4];
-			roundkey[i * 4 + 1] = key[i * 4 + 1];
-			roundkey[i * 4 + 2] = key[i * 4 + 2];
-			roundkey[i * 4 + 3] = key[i * 4 + 3];
-			//w[i] = key[i*4+3];
-			//w[i] =  key[i* 1][j] ;
-			//roundkey[i] = key[i];//
-			//cout << hex << (unsigned int)roundkey[i] << endl;
-			//cout << hex << (unsigned int)w[3] << endl;
-			//cout  <<hex<< (unsigned int)w[3] << endl;
-			
+		rkey[i * 4] = key[i * 4];
+		rkey[i * 4 + 1] = key[i * 4 + 1];
+		rkey[i * 4 + 2] = key[i * 4 + 2];
+		rkey[i * 4 + 3] = key[i * 4 + 3];
+		//w[i] = key[i*4+3];
+		//w[i] =  key[i* 1][j] ;
+		//rkey[i] = key[i];//
+		//cout << hex << (unsigned int)rkey[i] << endl;
+		//cout << hex << (unsigned int)w[3] << endl;
+		//cout  <<hex<< (unsigned int)w[3] << endl;
+
 		//}	
-		
-			//cout << hex << (unsigned int)roundkey[i] << endl;
-			//cout << i << endl;
+
+		//cout << hex << (unsigned int)rkey[i] << endl;
+		//cout << i << endl;
 	}
 	//cout << i << endl;
 	while (i<44)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			temp[j] = roundkey[(i - 1) * 4 + j];
+			temp[j] = rkey[(i - 1) * 4 + j];
 		}
 
 		if (i % 4 == 0)
@@ -221,11 +220,11 @@ void keyExpansion(unsigned char key[16])
 				temp[3] = k;
 			}
 			{
-				temp[0] = getSBoxValue(temp[0]);
-			temp[1] = getSBoxValue(temp[1]);
-			temp[2] = getSBoxValue(temp[2]);
-			temp[3] = getSBoxValue(temp[3]);
-		}
+				temp[0] = return_sbox(temp[0]);
+				temp[1] = return_sbox(temp[1]);
+				temp[2] = return_sbox(temp[2]);
+				temp[3] = return_sbox(temp[3]);
+			}
 			temp[0] = temp[0] ^ Rcon[i / 4];
 
 
@@ -234,52 +233,52 @@ void keyExpansion(unsigned char key[16])
 		{
 			// Function Subword()
 			{
-				temp[0] = getSBoxValue(temp[0]);
-				temp[1] = getSBoxValue(temp[1]);
-				temp[2] = getSBoxValue(temp[2]);
-				temp[3] = getSBoxValue(temp[3]);
+				temp[0] = return_sbox(temp[0]);
+				temp[1] = return_sbox(temp[1]);
+				temp[2] = return_sbox(temp[2]);
+				temp[3] = return_sbox(temp[3]);
 			}
 		}
-		roundkey[i * 4 + 0] = roundkey[(i - 4) * 4 + 0] ^ temp[0];
-		roundkey[i * 4 + 1] = roundkey[(i - 4) * 4 + 1] ^ temp[1];
-		roundkey[i * 4 + 2] = roundkey[(i - 4) * 4 + 2] ^ temp[2];
-		roundkey[i * 4 + 3] = roundkey[(i - 4) * 4 + 3] ^ temp[3];
+		rkey[i * 4 + 0] = rkey[(i - 4) * 4 + 0] ^ temp[0];
+		rkey[i * 4 + 1] = rkey[(i - 4) * 4 + 1] ^ temp[1];
+		rkey[i * 4 + 2] = rkey[(i - 4) * 4 + 2] ^ temp[2];
+		rkey[i * 4 + 3] = rkey[(i - 4) * 4 + 3] ^ temp[3];
 		i++;
 	}
-	
-	//cout <<hex<<(unsigned int) roundkey[i] << endl;
+
+	//cout <<hex<<(unsigned int) rkey[i] << endl;
 }
 
-void do_cipher()
+void encrypt()
 {
 	/*int i, j;
 	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < 4; j++)
-		{
-			statematrix[i][j] = in[i][j];
-		}
+	for (int j = 0; j < 4; j++)
+	{
+	result[i][j] = in[i][j];
+	}
 	}*/
-	//cout <<(unsigned int) statematrix[0][0] << endl;
+	//cout <<(unsigned int) result[0][0] << endl;
 
-	addroundkey(0);
+	addrkey(0);
 	for (int round = 1; round < 10; round++)
 	{
-		subsbyte(statematrix);
+		subistiute_byte(result);
 		shiftrow();
 		mixcolumns();
-		addroundkey(round);
+		addrkey(round);
 	}
-	subsbyte(statematrix);
+	subistiute_byte(result);
 	shiftrow();
-	addroundkey(10);
+	addrkey(10);
 
 	//for (i = 0; i<4; i++)
 	//{
 	//	for (j = 0; j<4; j++)
 	//	{
-	//		out[i * 4 + j] = statematrix[i][j];
-	//		//cout << hex << (unsigned int)statematrix[i][j] << endl;
+	//		out[i * 4 + j] = result[i][j];
+	//		//cout << hex << (unsigned int)result[i][j] << endl;
 	//	}
 	//}
 
@@ -307,7 +306,7 @@ int  main()
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				statematrix[i][j] = plain[i][j];
+				result[i][j] = plain[i][j];
 
 
 			}
@@ -317,7 +316,7 @@ int  main()
 		key[i] = key[i];
 		}*/
 
-		
+
 		int m;
 		cout << "Enter no of times of encryption" << endl;
 		cin >> m;
@@ -325,35 +324,35 @@ int  main()
 		clock_t t1 = clock();
 		for (int i = 0; i < m; i++)
 		{
-			do_cipher();
+			encrypt();
 		}
-		
+
 		cout << "Text after encryption:" << endl;
 		for (int i = 0; i < 4; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				//cout<<setfill('0')<<setw(2) << hex << (unsigned int)out[i] << " ";
-				printf("%x", (unsigned int)statematrix[i][j]);
-				
+				cout<<setfill('0')<<setw(2) << hex << (unsigned int)result[i][j];
+				//printf("%x", (unsigned int)result[i][j]);
+
 			}
-			
+
 		}
 		clock_t t2 = clock();
 		cout << endl;
 		printf("%f", ((double)(t2 - t1)) * 1000 / (double)CLOCKS_PER_SEC);
 	}
-	
-	
+
+
 	//double msec = ((double)(t2 - t1)) * 1000 /(double) CLOCKS_PER_SEC;
 	//cout << "\n""time: " << msec << endl;
-	
 
 
-	
+
+
 	//cout << "\n""time: " << ((t2 - t1) / double(CLOCKS_PER_SEC)) *1000 << endl;
 	//printf("%f", ((t2 - t1) / double(CLOCKS_PER_SEC)) * 1000);
 	return 0;
-	
-	
+
+
 }
